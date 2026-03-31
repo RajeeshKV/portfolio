@@ -12,13 +12,13 @@ function FeaturedProject({ project }) {
       transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
       className="col-span-12 group relative overflow-hidden rounded-2xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-500"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch">
         {/* Image */}
-        <div className="h-[200px] sm:h-[240px] lg:h-[300px] overflow-hidden relative">
+        <div className="relative overflow-hidden h-[220px] sm:h-[260px] lg:h-full lg:min-h-full">
           <img
             src={project.image}
             alt={project.title}
-            className="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100 blur-[2px] group-hover:blur-0"
+            className="absolute inset-0 w-full h-full object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100 blur-[2px] group-hover:blur-0"
             loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/30 to-transparent" />
