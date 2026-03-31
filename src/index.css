@@ -198,3 +198,36 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
+
+/* ===========================================
+   MOBILE PERFORMANCE OPTIMIZATIONS
+   =========================================== */
+
+/* Reduce heavy blur effects on mobile GPUs */
+@media (max-width: 768px) {
+  /* Ambient glows: smaller blur radius on mobile */
+  .blur-\[150px\] {
+    filter: blur(80px) !important;
+  }
+  .blur-\[120px\] {
+    filter: blur(60px) !important;
+  }
+  .blur-\[80px\] {
+    filter: blur(40px) !important;
+  }
+
+  /* Reduce backdrop-blur intensity on mobile */
+  .backdrop-blur-2xl {
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+  }
+}
+
+/* content-visibility: auto lets the browser skip rendering
+   offscreen sections until they're near the viewport.
+   contain-intrinsic-size gives a placeholder height so
+   scrollbar doesn't jump. */
+section[id]:not(#home) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}

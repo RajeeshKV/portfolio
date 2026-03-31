@@ -113,6 +113,7 @@ function CompanyProjectCard({ project, index }) {
               <img
                 src={project.logo}
                 alt={project.company}
+                loading="lazy"
                 className={`${project.logoRounded ? "w-full h-full object-cover" : "w-full h-full object-contain"}`}
               />
             </div>

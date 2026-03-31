@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function PageLoader({ children }) {
   const [loading, setLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Hard max timeout — never block the page for more than 3s
-    const maxTimeout = setTimeout(() => setLoading(false), 3000);
+    // Hard max timeout — never block the page for more than 2s
+    const maxTimeout = setTimeout(() => setLoading(false), 2000);
 
-    const minDelay = new Promise((r) => setTimeout(r, 800));
+    const minDelay = new Promise((r) => setTimeout(r, 400));
 
     // Safely check fonts API with fallback
     const fontsReady = document.fonts && document.fonts.ready
@@ -22,6 +23,20 @@ export default function PageLoader({ children }) {
     return () => clearTimeout(maxTimeout);
   }, []);
 
+  // Once loading ends, wait a frame then mount children
+  // This prevents the main thread from freezing because
+  // we no longer render all heavy components while the loader is visible
+  useEffect(() => {
+    if (!loading) {
+      // Use requestAnimationFrame to let the exit animation start,
+      // then mount children on the next frame
+      const raf = requestAnimationFrame(() => {
+        setShowContent(true);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [loading]);
+
   return (
     <>
       <AnimatePresence>
@@ -30,7 +45,7 @@ export default function PageLoader({ children }) {
             key="loader"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             style={{ pointerEvents: "auto" }}
             className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center gap-6"
           >
@@ -62,10 +77,7 @@ export default function PageLoader({ children }) {
         )}
       </AnimatePresence>
 
-      {/* Always render children — just visually hidden while loading */}
-      <div style={{ opacity: loading ? 0 : 1, transition: "opacity 0.4s ease" }}>
-        {children}
-      </div>
+      {showContent && children}
     </>
   );
 }
