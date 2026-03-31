@@ -8,10 +8,11 @@ import Hobbies from "./components/Hobbies";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import PageLoader from "./components/PageLoader";
 
 export default function App() {
   return (
-    <>
+    <PageLoader>
       <Navbar />
       <main>
         <Hero />
@@ -24,6 +25,6 @@ export default function App() {
       </main>
       <Footer />
       <ScrollToTop />
-    </>
+    </PageLoader>
   );
 }
