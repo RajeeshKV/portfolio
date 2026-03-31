@@ -5,7 +5,7 @@ const hobbies = [
   {
     icon: "photo_camera",
     title: "Photography",
-    description: "Capturing moments through the lens — landscapes, street life, and creative compositions.",
+    description: "Capturing moments through the lens - landscapes, street life, and creative compositions.",
     link: "https://www.google.com",
     linkText: "View Gallery",
     color: "primary",
