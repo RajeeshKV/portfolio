@@ -66,6 +66,8 @@ function FeaturedProject({ project }) {
 
           <a
             href={project.link || "#"}
+            target={project.link?.startsWith("http") ? "_blank" : undefined}
+            rel={project.link?.startsWith("http") ? "noopener noreferrer" : undefined}
             className="self-start font-label text-xs uppercase font-black tracking-[0.2em] text-primary hover:text-white transition-colors flex items-center gap-2 group/link"
           >
             Explore Deployment

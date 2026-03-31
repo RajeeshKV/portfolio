@@ -5,19 +5,114 @@ export default function PageLoader({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Hard max — never show loader more than 2.5s
-    const maxTimeout = setTimeout(() => setLoading(false), 3000);
+    let cancelled = false;
 
-    // Min 600ms so the loader is perceived (not a flash)
-    const minDelay = new Promise((r) => setTimeout(r, 800));
+    document.body.style.overflow = "hidden";
+
+    // Fallback so loader never gets stuck in edge cases.
+    const hardMaxTimeout = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 4500);
+
+    const waitForWindowLoad = () =>
+      new Promise((resolve) => {
+        if (document.readyState === "complete") {
+          resolve();
+          return;
+        }
+
+        const onLoad = () => {
+          window.removeEventListener("load", onLoad);
+          resolve();
+        };
+
+        window.addEventListener("load", onLoad, { once: true });
+      });
+
+    const waitForFrames = (frames = 2) =>
+      new Promise((resolve) => {
+        const step = (remaining) => {
+          if (remaining <= 0) {
+            resolve();
+            return;
+          }
+          requestAnimationFrame(() => step(remaining - 1));
+        };
+        step(frames);
+      });
+
+    const waitForCriticalHomeContent = () =>
+      new Promise((resolve) => {
+        const selectors = [
+          "[data-home-logo]",
+          "[data-home-cta-primary]",
+          "[data-home-cta-secondary]",
+        ];
+        const startedAt = Date.now();
+        const maxWaitMs = 2800;
+
+        const hasVisibleElement = (selector) => {
+          const el = document.querySelector(selector);
+          if (!el) return false;
+          const rect = el.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        };
+
+        const check = () => {
+          if (cancelled) {
+            resolve();
+            return;
+          }
+
+          const allReady = selectors.every(hasVisibleElement);
+          const timedOut = Date.now() - startedAt > maxWaitMs;
+          if (allReady || timedOut) {
+            resolve();
+            return;
+          }
+
+          requestAnimationFrame(check);
+        };
+
+        check();
+      });
+
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const minDelay = new Promise((resolve) =>
+      setTimeout(resolve, isMobile ? 850 : 550)
+    );
+    const mobileSettleDelay = isMobile
+      ? new Promise((resolve) => setTimeout(resolve, 250))
+      : Promise.resolve();
     const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
-    Promise.all([minDelay, fontsReady])
-      .then(() => setLoading(false))
-      .catch(() => setLoading(false));
+    Promise.all([
+      waitForWindowLoad(),
+      fontsReady,
+      minDelay,
+      waitForCriticalHomeContent(),
+      mobileSettleDelay,
+    ])
+      .then(() => waitForFrames(2))
+      .then(() => {
+        if (!cancelled) setLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
 
-    return () => clearTimeout(maxTimeout);
+    return () => {
+      cancelled = true;
+      clearTimeout(hardMaxTimeout);
+      document.body.style.overflow = "";
+    };
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      document.body.style.overflow = "";
+    }
+  }, [loading]);
 
   return (
     <>
@@ -57,20 +152,20 @@ export default function PageLoader({ children }) {
         )}
       </AnimatePresence>
 
-      {/*
-        Children are NOT rendered until loading is false.
-        This prevents ALL React components from mounting while
-        the loader is visible — the #1 cause of the mobile freeze.
-
-        The contentFadeIn CSS animation is used instead of
-        framer-motion here to avoid adding FM overhead to the
-        content wrapper itself.
-      */}
-      {!loading && (
-        <div style={{ animation: "contentFadeIn 0.4s ease-out forwards" }}>
-          {children}
-        </div>
-      )}
+      <div
+        aria-hidden={loading}
+        style={
+          loading
+            ? {
+                opacity: 0,
+                visibility: "hidden",
+                pointerEvents: "none",
+              }
+            : { animation: "contentFadeIn 0.35s ease-out forwards" }
+        }
+      >
+        {children}
+      </div>
     </>
   );
 }

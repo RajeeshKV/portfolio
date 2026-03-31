@@ -7,6 +7,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const active = useActiveSection();
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -23,9 +24,12 @@ export default function Navbar() {
   return (
     <>
       <motion.nav
-        initial={{ y: -80, opacity: 0 }}
+        initial={isMobile ? false : { y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{
+          duration: isMobile ? 0.2 : 0.6,
+          ease: [0.16, 1, 0.3, 1],
+        }}
         className={`fixed top-0 w-full z-50 flex justify-between items-center px-6 md:px-10 py-5 transition-all duration-500 ${
           scrolled
             ? "bg-surface-container-lowest/90 backdrop-blur-2xl shadow-[0_1px_0_0_rgba(72,72,73,0.15)]"
@@ -33,7 +37,11 @@ export default function Navbar() {
         }`}
       >
         {/* Logo */}
-        <a href="#home" className="text-2xl font-black tracking-tighter font-headline group">
+        <a
+          href="#home"
+          data-home-logo
+          className="text-2xl font-black tracking-tighter font-headline group"
+        >
           <span className="text-primary">
             Rajeesh
           </span>

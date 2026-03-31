@@ -1,21 +1,76 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "../hooks/useInView";
 import { contactInfo } from "../data/portfolio";
 
+function LinkedInIcon({ className = "" }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M6.94 8.5H3.56V20h3.38V8.5Zm.22-3.56c0-1.05-.79-1.94-1.91-1.94-1.11 0-1.91.89-1.91 1.94 0 1.03.78 1.94 1.88 1.94h.02c1.14 0 1.92-.91 1.92-1.94ZM20.44 13.05c0-3.47-1.85-5.08-4.33-5.08-2 0-2.89 1.1-3.39 1.88V8.5H9.34c.04.89 0 11.5 0 11.5h3.38v-6.42c0-.34.03-.68.13-.92.27-.68.89-1.39 1.92-1.39 1.36 0 1.9 1.04 1.9 2.57V20H20v-6.95Z" />
+    </svg>
+  );
+}
+
+function WhatsAppIcon({ className = "" }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M19.11 4.89A9.93 9.93 0 0 0 12.04 2C6.53 2 2.06 6.47 2.06 11.98c0 1.76.46 3.47 1.32 4.98L2 22l5.19-1.36a9.95 9.95 0 0 0 4.85 1.24h.01c5.5 0 9.97-4.48 9.97-9.99a9.9 9.9 0 0 0-2.91-7Zm-7.07 15.3h-.01a8.28 8.28 0 0 1-4.22-1.16l-.3-.18-3.08.81.82-3-.2-.31a8.27 8.27 0 0 1-1.28-4.39c0-4.57 3.72-8.29 8.3-8.29 2.21 0 4.29.86 5.85 2.43a8.23 8.23 0 0 1 2.43 5.87c0 4.57-3.72 8.29-8.31 8.29Zm4.55-6.19c-.25-.13-1.47-.73-1.7-.81-.23-.08-.4-.13-.57.13-.17.25-.65.81-.8.98-.15.17-.3.19-.56.06-.25-.13-1.07-.39-2.03-1.25-.75-.67-1.25-1.5-1.4-1.76-.15-.25-.02-.39.11-.52.12-.12.25-.3.38-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.57-1.38-.78-1.89-.2-.49-.41-.42-.57-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.23.9 2.43 1.02 2.6.13.17 1.77 2.7 4.3 3.79.6.26 1.08.42 1.45.54.61.19 1.17.16 1.61.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.07-.1-.23-.17-.48-.29Z" />
+    </svg>
+  );
+}
+
+function ContactIcon({ icon }) {
+  if (icon === "linkedin") {
+    return <LinkedInIcon className="h-5 w-5" />;
+  }
+
+  if (icon === "whatsapp") {
+    return <WhatsAppIcon className="h-5 w-5" />;
+  }
+
+  return <span className="material-symbols-outlined text-xl">{icon}</span>;
+}
+
+const contactCards = [
+  {
+    label: "Email",
+    value: contactInfo.email,
+    href: `mailto:${contactInfo.email}`,
+    icon: "mail",
+  },
+  {
+    label: "WhatsApp",
+    value: "Chat on WhatsApp",
+    href: `https://wa.me/${contactInfo.phone.replace(/\D/g, "")}`,
+    icon: "whatsapp",
+    external: true,
+  },
+  {
+    label: "Call",
+    value: contactInfo.phone,
+    href: `tel:${contactInfo.phone.replace(/\s/g, "")}`,
+    icon: "call",
+  },
+  {
+    label: "LinkedIn",
+    value: "Connect on LinkedIn",
+    href: contactInfo.linkedin,
+    icon: "linkedin",
+    external: true,
+  },
+];
+
 export default function Contact() {
   const [ref, inView] = useInView();
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [focused, setFocused] = useState(null);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-  };
 
   return (
     <section id="contact" className="py-20 md:py-32 px-6 md:px-20 bg-surface">
@@ -30,169 +85,47 @@ export default function Contact() {
         <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 lg:gap-20 relative z-10">
-          {/* Left: Info */}
-          <div>
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.2, duration: 0.7 }}
-              className="font-headline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 md:mb-8 leading-[1.05]"
-            >
-              Let's build the
-              <br />
-              <span className="text-primary">Reliable.</span>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.35, duration: 0.7 }}
-              className="font-body text-on-surface-variant text-lg md:text-xl mb-10 md:mb-12 max-w-md leading-relaxed"
-            >
-              Available for high-impact architecture roles and enterprise
-              consulting.
-            </motion.p>
-
-            <div className="space-y-5">
-              <motion.a
-                initial={{ opacity: 0, x: -20 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 0.45, duration: 0.6 }}
-                href={`mailto:${contactInfo.email}`}
-                className="flex items-center gap-4 group"
-              >
-                <div className="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                  <span className="material-symbols-outlined text-xl group-hover:text-on-primary transition-colors">
-                    mail
-                  </span>
-                </div>
-                <span className="font-headline text-base md:text-xl font-medium group-hover:text-primary transition-colors break-all">
-                  {contactInfo.email}
-                </span>
-              </motion.a>
-
-              <motion.a
-                initial={{ opacity: 0, x: -20 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
-                className="flex items-center gap-4 group"
-              >
-                <div className="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                  <span className="material-symbols-outlined text-xl group-hover:text-on-primary transition-colors">
-                    phone
-                  </span>
-                </div>
-                <span className="font-headline text-base md:text-xl font-medium group-hover:text-primary transition-colors">
-                  {contactInfo.phone}
-                </span>
-              </motion.a>
-
-              <motion.a
-                initial={{ opacity: 0, x: -20 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 0.6, duration: 0.6 }}
-                href={contactInfo.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 group text-secondary hover:text-white transition-colors"
-              >
-                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center group-hover:bg-secondary group-hover:scale-110 transition-all duration-300">
-                  <span className="material-symbols-outlined text-xl group-hover:text-background transition-colors">
-                    person_add
-                  </span>
-                </div>
-                <span className="font-headline text-base md:text-lg font-bold uppercase tracking-wider">
-                  Connect on LinkedIn
-                </span>
-              </motion.a>
-            </div>
-          </div>
-
-          {/* Right: Form */}
-          <motion.form
+        <div className="relative z-10 max-w-5xl">
+          <motion.h2
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3, duration: 0.7 }}
-            onSubmit={handleSubmit}
-            className="space-y-6 md:space-y-8"
+            transition={{ delay: 0.15, duration: 0.7 }}
+            className="font-headline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 md:mb-8 leading-[1.05]"
           >
-            {/* Full Name */}
-            <div className="space-y-2">
-              <label className="font-label text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">
-                Full Name
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                  onFocus={() => setFocused("name")}
-                  onBlur={() => setFocused(null)}
-                  className="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant/20 py-4 text-white placeholder:text-outline/50 focus:ring-0 focus:border-primary transition-all duration-300 font-body"
-                />
-                <motion.div
-                  animate={{ scaleX: focused === "name" ? 1 : 0 }}
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary origin-left"
-                />
-              </div>
-            </div>
+            Let&apos;s build the
+            <br />
+            <span className="text-primary">Reliable.</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.3, duration: 0.7 }}
+            className="font-body text-on-surface-variant text-lg md:text-xl mb-10 md:mb-14 max-w-2xl leading-relaxed"
+          >
+            Available for high-impact architecture roles, backend engineering,
+            and enterprise consulting. Reach out directly through the channels
+            below.
+          </motion.p>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="font-label text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">
-                Email Address
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="john@domain.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  onFocus={() => setFocused("email")}
-                  onBlur={() => setFocused(null)}
-                  className="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant/20 py-4 text-white placeholder:text-outline/50 focus:ring-0 focus:border-primary transition-all duration-300 font-body"
-                />
-                <motion.div
-                  animate={{ scaleX: focused === "email" ? 1 : 0 }}
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary origin-left"
-                />
-              </div>
-            </div>
-
-            {/* Message */}
-            <div className="space-y-2">
-              <label className="font-label text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">
-                Message
-              </label>
-              <div className="relative">
-                <textarea
-                  name="message"
-                  placeholder="Tell me about your project..."
-                  rows={4}
-                  value={formData.message}
-                  onChange={handleChange}
-                  onFocus={() => setFocused("message")}
-                  onBlur={() => setFocused(null)}
-                  className="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant/20 py-4 text-white placeholder:text-outline/50 focus:ring-0 focus:border-primary transition-all duration-300 resize-none font-body"
-                />
-                <motion.div
-                  animate={{ scaleX: focused === "message" ? 1 : 0 }}
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary origin-left"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-primary to-primary-fixed text-on-primary py-5 md:py-6 rounded-full font-label font-black uppercase text-xs tracking-[0.25em] hover:shadow-[0_0_40px_rgba(170,255,220,0.3)] active:scale-[0.98] transition-all duration-300"
-            >
-              Initiate Protocol
-            </button>
-          </motion.form>
+          <div className="flex flex-wrap items-center gap-4 md:gap-5">
+            {contactCards.map((item, index) => (
+              <motion.a
+                key={item.label}
+                initial={{ opacity: 0, y: 24 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.4 + index * 0.08, duration: 0.6 }}
+                href={item.href}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noopener noreferrer" : undefined}
+                aria-label={item.label}
+                className="group inline-flex h-16 w-16 items-center justify-center rounded-full border border-outline-variant/10 bg-surface-container-low/70 text-on-surface-variant transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:bg-primary hover:text-on-primary"
+              >
+                <span className="transition-colors">
+                  <ContactIcon icon={item.icon} />
+                </span>
+              </motion.a>
+            ))}
+          </div>
         </div>
       </motion.div>
     </section>

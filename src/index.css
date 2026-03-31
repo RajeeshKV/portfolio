@@ -138,6 +138,10 @@ section[id] {
   scroll-margin-top: 50px;
 }
 
+section#contact {
+  scroll-margin-top: 12px;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-on-surface);

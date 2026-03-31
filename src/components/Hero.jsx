@@ -53,6 +53,9 @@ const TypingLine = memo(function TypingLine({ text, type, delay }) {
 });
 
 export default function Hero() {
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const instantIntro = isMobile;
+
   return (
     <section
       id="home"
@@ -78,18 +81,26 @@ export default function Hero() {
       {/* Content */}
       <div className="relative z-10 max-w-5xl w-full">
         <motion.span
-          initial={{ opacity: 0, x: -40 }}
+          initial={instantIntro ? false : { opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: instantIntro ? 0.2 : 0.8,
+            delay: instantIntro ? 0 : 0.1,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className="font-label text-secondary uppercase tracking-[0.4em] mb-6 block text-xs md:text-sm"
         >
           Staff Engineer | Backend Architect
         </motion.span>
 
         <motion.h1
-          initial={{ opacity: 0, y: 50 }}
+          initial={instantIntro ? false : { opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: instantIntro ? 0.25 : 1,
+            delay: instantIntro ? 0 : 0.2,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className="font-headline text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-[0.9] tracking-tighter mb-8 text-glow"
         >
           Rajeesh KV.
@@ -100,9 +111,13 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 40 }}
+          initial={instantIntro ? false : { opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: instantIntro ? 0.25 : 0.9,
+            delay: instantIntro ? 0.05 : 0.35,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className="font-body text-lg md:text-xl lg:text-2xl text-on-surface-variant max-w-2xl mb-12 leading-relaxed"
         >
           Architecting scalable enterprise systems with 5+ years of experience
@@ -110,13 +125,18 @@ export default function Hero() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={instantIntro ? false : { opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: instantIntro ? 0.25 : 0.9,
+            delay: instantIntro ? 0.08 : 0.5,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className="flex flex-col sm:flex-row gap-4 md:gap-6"
         >
           <a
             href="#projects"
+            data-home-cta-primary
             className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-primary-fixed text-on-primary px-8 md:px-10 py-4 md:py-5 rounded-full font-label font-extrabold uppercase text-xs md:text-sm tracking-[0.15em] hover:shadow-[0_0_40px_rgba(170,255,220,0.4)] transition-all duration-300"
           >
             System Portfolio
@@ -126,6 +146,7 @@ export default function Hero() {
           </a>
           <a
             href="#contact"
+            data-home-cta-secondary
             className="inline-flex items-center justify-center gap-3 border border-outline-variant/30 text-primary px-8 md:px-10 py-4 md:py-5 rounded-full font-label font-extrabold uppercase text-xs md:text-sm tracking-[0.15em] hover:bg-surface-container-high hover:border-primary/30 transition-all duration-300"
           >
             Get In Touch
@@ -161,9 +182,9 @@ export default function Hero() {
 
       {/* Scroll indicator */}
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={instantIntro ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 1 }}
+        transition={{ delay: instantIntro ? 0.12 : 1.5, duration: instantIntro ? 0.25 : 1 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
       >
         <span className="font-label text-[9px] uppercase tracking-[0.3em] text-on-surface-variant/40">
