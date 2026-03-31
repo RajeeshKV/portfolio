@@ -6,10 +6,10 @@ export default function PageLoader({ children }) {
 
   useEffect(() => {
     // Hard max — never show loader more than 2.5s
-    const maxTimeout = setTimeout(() => setLoading(false), 2500);
+    const maxTimeout = setTimeout(() => setLoading(false), 3000);
 
     // Min 600ms so the loader is perceived (not a flash)
-    const minDelay = new Promise((r) => setTimeout(r, 600));
+    const minDelay = new Promise((r) => setTimeout(r, 800));
     const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
     Promise.all([minDelay, fontsReady])
