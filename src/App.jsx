@@ -10,6 +10,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import PageLoader from "./components/PageLoader";
+import HashScrollManager from "./components/HashScrollManager";
 
 /**
  * Defers mounting of children to a future frame.
@@ -34,6 +35,7 @@ function Deferred({ children, delay = 0 }) {
 export default function App() {
   return (
     <PageLoader>
+      <HashScrollManager />
       <Navbar />
       <main>
         {/* Hero mounts immediately — it's above the fold */}
