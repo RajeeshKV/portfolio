@@ -1,11 +1,20 @@
 import { useEffect } from "react";
 
 const HEADER_GAP = 20;
-const MAX_ATTEMPTS = 30;
+const MAX_WAIT_FRAMES = 180;
+const STABLE_ALIGNMENT_FRAMES = 8;
+const POSITION_TOLERANCE = 4;
 
 function getHeaderOffset() {
   const nav = document.querySelector("nav");
   return nav ? nav.getBoundingClientRect().height + HEADER_GAP : 96;
+}
+
+function getTargetScrollTop(target) {
+  return Math.max(
+    0,
+    window.scrollY + target.getBoundingClientRect().top - getHeaderOffset()
+  );
 }
 
 function scrollToHash(hash, options = {}) {
@@ -14,34 +23,63 @@ function scrollToHash(hash, options = {}) {
   const target = document.querySelector(hash);
   if (!target) return false;
 
-  const top =
-    window.scrollY + target.getBoundingClientRect().top - getHeaderOffset();
-
   window.scrollTo({
-    top: Math.max(0, top),
+    top: getTargetScrollTop(target),
     behavior: options.behavior ?? "smooth",
   });
 
-  return true;
+  return target;
 }
 
 export default function HashScrollManager() {
   useEffect(() => {
-    let rafId = 0;
+    let rafIds = [];
 
     const scheduleScroll = (hash, options = {}) => {
-      let attempts = 0;
+      let waitFrames = 0;
+      let alignedFrames = 0;
 
-      const tryScroll = () => {
-        const didScroll = scrollToHash(hash, options);
-        attempts += 1;
+      const registerFrame = (callback) => {
+        const id = window.requestAnimationFrame(callback);
+        rafIds.push(id);
+      };
 
-        if (!didScroll && attempts < MAX_ATTEMPTS) {
-          rafId = window.requestAnimationFrame(tryScroll);
+      const alignToTarget = (target) => {
+        const desiredTop = getTargetScrollTop(target);
+        const delta = Math.abs(window.scrollY - desiredTop);
+
+        window.scrollTo({
+          top: desiredTop,
+          behavior: options.behavior ?? "smooth",
+        });
+
+        if (delta <= POSITION_TOLERANCE) {
+          alignedFrames += 1;
+        } else {
+          alignedFrames = 0;
+        }
+
+        if (alignedFrames < STABLE_ALIGNMENT_FRAMES) {
+          registerFrame(() => alignToTarget(target));
         }
       };
 
-      rafId = window.requestAnimationFrame(tryScroll);
+      const waitForTarget = () => {
+        const target = scrollToHash(hash, options);
+        waitFrames += 1;
+
+        if (target) {
+          alignedFrames = 0;
+          registerFrame(() => alignToTarget(target));
+          return;
+        }
+
+        if (waitFrames < MAX_WAIT_FRAMES) {
+          registerFrame(waitForTarget);
+        }
+      };
+
+      registerFrame(waitForTarget);
     };
 
     const onDocumentClick = (event) => {
@@ -84,7 +122,8 @@ export default function HashScrollManager() {
     return () => {
       document.removeEventListener("click", onDocumentClick);
       window.removeEventListener("hashchange", onHashChange);
-      window.cancelAnimationFrame(rafId);
+      rafIds.forEach((id) => window.cancelAnimationFrame(id));
+      rafIds = [];
     };
   }, []);
 
