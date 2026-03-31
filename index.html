@@ -16,7 +16,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        body { background-color: #0e0e0f; margin: 0; }
+        .skeleton-screen { box-sizing: border-box; display: flex; flex-direction: column; height: 100vh; padding: 20px 24px; gap: 40px; }
+        .skeleton-nav { display: flex; justify-content: space-between; align-items: center; height: 40px; }
+        .pulse { animation: skeleton-pulse 1.5s ease-in-out infinite; background-color: #262627; border-radius: 4px; }
+        .skel-logo { width: 120px; height: 24px; }
+        .skel-menu { width: 40px; height: 24px; border-radius: 50%; }
+        .skeleton-hero { flex-grow: 1; margin-top: 10vh; }
+        .skel-label { width: 220px; height: 14px; margin-bottom: 24px; border-radius: 20px; }
+        .skel-title-1 { width: 80%; max-width: 400px; height: 60px; margin-bottom: 12px; }
+        .skel-title-2 { width: 60%; max-width: 300px; height: 60px; margin-bottom: 12px; }
+        .skel-title-3 { width: 40%; max-width: 200px; height: 60px; margin-bottom: 32px; }
+        .skel-desc-1 { width: 90%; max-width: 500px; height: 16px; margin-bottom: 12px; }
+        .skel-desc-2 { width: 70%; max-width: 400px; height: 16px; margin-bottom: 40px; }
+        .skel-buttons { display: flex; gap: 16px; }
+        .skel-btn-1 { width: 160px; height: 50px; border-radius: 25px; }
+        .skel-btn-2 { width: 140px; height: 50px; border-radius: 25px; }
+        @keyframes skeleton-pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.4; }
+          100% { opacity: 1; }
+        }
+      </style>
+      <div class="skeleton-screen">
+        <div class="skeleton-nav">
+          <div class="pulse skel-logo"></div>
+          <div class="pulse skel-menu"></div>
+        </div>
+        <div class="skeleton-hero">
+          <div class="pulse skel-label"></div>
+          <div class="pulse skel-title-1"></div>
+          <div class="pulse skel-title-2"></div>
+          <div class="pulse skel-title-3"></div>
+          <div class="pulse skel-desc-1"></div>
+          <div class="pulse skel-desc-2"></div>
+          <div class="skel-buttons">
+            <div class="pulse skel-btn-1"></div>
+            <div class="pulse skel-btn-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
