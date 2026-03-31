@@ -15,14 +15,14 @@ function TimelineItem({ exp, index }) {
         delay: index * 0.15,
         ease: [0.16, 1, 0.3, 1],
       }}
-      className="relative pl-10 md:pl-14 pb-14 last:pb-0 group"
+      className="relative pl-8 md:pl-14 pb-12 md:pb-14 last:pb-0 group"
     >
       {/* Vertical line */}
-      <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-outline-variant/20 group-last:bg-gradient-to-b group-last:from-outline-variant/20 group-last:to-transparent" />
+      <div className="absolute left-[3px] md:left-0 top-0 bottom-0 w-[2px] bg-outline-variant/20 group-last:bg-gradient-to-b group-last:from-outline-variant/20 group-last:to-transparent" />
 
       {/* Dot */}
       <div
-        className={`absolute -left-[7px] top-1 w-4 h-4 rounded-full ring-[6px] ring-background transition-all duration-500 ${
+        className={`absolute -left-[4px] md:-left-[7px] top-1 w-4 h-4 rounded-full ring-[6px] ring-background transition-all duration-500 ${
           exp.current
             ? "bg-primary shadow-[0_0_12px_rgba(170,255,220,0.5)]"
             : "bg-outline-variant/60 group-hover:bg-primary group-hover:shadow-[0_0_12px_rgba(170,255,220,0.3)]"
@@ -47,17 +47,17 @@ function TimelineItem({ exp, index }) {
       <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant/60 font-bold mb-3 block">
         {exp.period}
       </span>
-      <h3 className="font-headline text-2xl md:text-3xl font-bold mb-1">
+      <h3 className="font-headline text-2xl md:text-3xl font-bold mb-1 break-words">
         {exp.role}
       </h3>
-      <p className="font-label text-secondary mb-1 font-bold tracking-wider text-sm">
+      <p className="font-label text-secondary mb-1 font-bold tracking-wider text-sm break-words">
         {exp.company}
       </p>
-      <p className="font-body text-on-surface-variant/50 text-xs mb-4 flex items-center gap-1">
-        <span className="material-symbols-outlined text-xs">location_on</span>
+      <p className="font-body text-on-surface-variant/50 text-xs mb-4 flex items-center gap-1 flex-wrap break-words">
+        <span className="material-symbols-outlined text-xs shrink-0">location_on</span>
         {exp.location}
       </p>
-      <p className="font-body text-on-surface-variant text-sm md:text-base leading-relaxed mb-4">
+      <p className="font-body text-on-surface-variant text-sm md:text-base leading-relaxed mb-4 break-words">
         {exp.description}
       </p>
 
@@ -65,11 +65,11 @@ function TimelineItem({ exp, index }) {
       {exp.highlights && exp.highlights.length > 0 && (
         <ul className="space-y-2">
           {exp.highlights.map((highlight, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface-variant/80">
+            <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface-variant/80 w-full overflow-hidden">
               <span className="material-symbols-outlined text-primary text-xs mt-1 shrink-0">
                 chevron_right
               </span>
-              <span className="font-body leading-relaxed">{highlight}</span>
+              <span className="font-body leading-relaxed flex-1 min-w-0 break-words">{highlight}</span>
             </li>
           ))}
         </ul>

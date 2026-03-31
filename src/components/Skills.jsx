@@ -47,15 +47,15 @@ function SkillCategory({ category, delay }) {
       initial={{ opacity: 0, y: 40 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, delay: delay * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="md:col-span-2 p-8 md:p-10 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-outline-variant/25 transition-all duration-500"
+      className="col-span-2 p-6 sm:p-8 md:p-10 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-outline-variant/25 transition-all duration-500"
     >
-      <div className="flex items-center gap-4 mb-8">
-        <div className={`w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center`}>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 sm:mb-8">
+        <div className={`w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0`}>
           <span className={`material-symbols-outlined text-2xl ${iconColor}`}>
             {category.icon}
           </span>
         </div>
-        <h3 className="font-headline text-xl md:text-2xl font-bold">
+        <h3 className="font-headline text-xl md:text-2xl font-bold break-words">
           {category.title}
         </h3>
       </div>
@@ -82,9 +82,9 @@ function ToolCard({ tool, delay }) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={inView ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.5, delay: delay * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      className="p-6 md:p-8 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/20 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:bg-surface-container"
+      className="p-4 sm:p-6 md:p-8 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/20 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:bg-surface-container"
     >
-      <span className="material-symbols-outlined text-3xl mb-4 text-on-surface-variant group-hover:text-primary transition-colors duration-300">
+      <span className="material-symbols-outlined text-2xl sm:text-3xl mb-3 sm:mb-4 text-on-surface-variant group-hover:text-primary transition-colors duration-300">
         {tool.icon}
       </span>
       <span className="font-label text-[10px] uppercase font-bold tracking-widest group-hover:text-white transition-colors">
