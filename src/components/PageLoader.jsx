@@ -3,18 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function PageLoader({ children }) {
   const [loading, setLoading] = useState(true);
-  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Hard max timeout — never block the page for more than 2s
-    const maxTimeout = setTimeout(() => setLoading(false), 2000);
+    // Hard max — never show loader more than 2.5s
+    const maxTimeout = setTimeout(() => setLoading(false), 2500);
 
-    const minDelay = new Promise((r) => setTimeout(r, 400));
-
-    // Safely check fonts API with fallback
-    const fontsReady = document.fonts && document.fonts.ready
-      ? document.fonts.ready
-      : Promise.resolve();
+    // Min 600ms so the loader is perceived (not a flash)
+    const minDelay = new Promise((r) => setTimeout(r, 600));
+    const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
     Promise.all([minDelay, fontsReady])
       .then(() => setLoading(false))
@@ -23,33 +19,18 @@ export default function PageLoader({ children }) {
     return () => clearTimeout(maxTimeout);
   }, []);
 
-  // Once loading ends, wait a frame then mount children
-  // This prevents the main thread from freezing because
-  // we no longer render all heavy components while the loader is visible
-  useEffect(() => {
-    if (!loading) {
-      // Use requestAnimationFrame to let the exit animation start,
-      // then mount children on the next frame
-      const raf = requestAnimationFrame(() => {
-        setShowContent(true);
-      });
-      return () => cancelAnimationFrame(raf);
-    }
-  }, [loading]);
-
   return (
     <>
+      {/* Loader overlay */}
       <AnimatePresence>
         {loading && (
           <motion.div
             key="loader"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            style={{ pointerEvents: "auto" }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center gap-6"
           >
-            {/* Animated logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -60,7 +41,6 @@ export default function PageLoader({ children }) {
               <span className="text-on-surface-variant/40">.KV</span>
             </motion.div>
 
-            {/* Loading bar */}
             <div className="w-40 h-[2px] bg-surface-container-highest rounded-full overflow-hidden">
               <motion.div
                 initial={{ x: "-100%" }}
@@ -77,7 +57,20 @@ export default function PageLoader({ children }) {
         )}
       </AnimatePresence>
 
-      {showContent && children}
+      {/*
+        Children are NOT rendered until loading is false.
+        This prevents ALL React components from mounting while
+        the loader is visible — the #1 cause of the mobile freeze.
+
+        The contentFadeIn CSS animation is used instead of
+        framer-motion here to avoid adding FM overhead to the
+        content wrapper itself.
+      */}
+      {!loading && (
+        <div style={{ animation: "contentFadeIn 0.4s ease-out forwards" }}>
+          {children}
+        </div>
+      )}
     </>
   );
 }

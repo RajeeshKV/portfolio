@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // ===================================================================
 // SHARED INTERSECTION OBSERVER
@@ -60,20 +60,35 @@ export function useActiveSection() {
   const [active, setActive] = useState("home");
 
   useEffect(() => {
-    const sections = document.querySelectorAll("section[id]");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: "-40% 0px -40% 0px" }
-    );
+    let observer;
 
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    function observe() {
+      if (observer) observer.disconnect();
+
+      const sections = document.querySelectorAll("section[id]");
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActive(entry.target.id);
+            }
+          });
+        },
+        { rootMargin: "-40% 0px -40% 0px" }
+      );
+      sections.forEach((s) => observer.observe(s));
+    }
+
+    // Initial setup
+    observe();
+
+    // Re-observe after deferred sections have mounted (~300ms stagger)
+    const timer = setTimeout(observe, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      observer?.disconnect();
+    };
   }, []);
 
   return active;
