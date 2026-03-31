@@ -5,12 +5,21 @@ export default function PageLoader({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const minDelay = new Promise((r) => setTimeout(r, 1200));
-    const fontsReady = document.fonts.ready;
+    // Hard max timeout — never block the page for more than 3s
+    const maxTimeout = setTimeout(() => setLoading(false), 3000);
 
-    Promise.all([minDelay, fontsReady]).then(() => {
-      setLoading(false);
-    });
+    const minDelay = new Promise((r) => setTimeout(r, 800));
+
+    // Safely check fonts API with fallback
+    const fontsReady = document.fonts && document.fonts.ready
+      ? document.fonts.ready
+      : Promise.resolve();
+
+    Promise.all([minDelay, fontsReady])
+      .then(() => setLoading(false))
+      .catch(() => setLoading(false));
+
+    return () => clearTimeout(maxTimeout);
   }, []);
 
   return (
@@ -21,7 +30,8 @@ export default function PageLoader({ children }) {
             key="loader"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            style={{ pointerEvents: "auto" }}
             className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center gap-6"
           >
             {/* Animated logo */}
@@ -52,13 +62,10 @@ export default function PageLoader({ children }) {
         )}
       </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: loading ? 0 : 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
+      {/* Always render children — just visually hidden while loading */}
+      <div style={{ opacity: loading ? 0 : 1, transition: "opacity 0.4s ease" }}>
         {children}
-      </motion.div>
+      </div>
     </>
   );
 }
