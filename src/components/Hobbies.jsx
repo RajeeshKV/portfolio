@@ -6,7 +6,7 @@ const hobbies = [
     icon: "photo_camera",
     title: "Photography",
     description: "Capturing moments through the lens - landscapes, street life, and creative compositions.",
-    link: "https://www.google.com",
+    link: "https://www.gallery.rajeesh.online",
     linkText: "View Gallery",
     color: "primary",
   },
