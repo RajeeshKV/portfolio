@@ -10,8 +10,14 @@ export default function Navbar() {
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => {
+      const nextScrolled = window.scrollY > 40;
+      setScrolled((prev) => (prev === nextScrolled ? prev : nextScrolled));
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -85,7 +91,7 @@ export default function Navbar() {
 
         {/* Mobile Hamburger */}
         <button
-          onClick={() => setMobileOpen(!mobileOpen)}
+          onClick={() => setMobileOpen((open) => !open)}
           className="md:hidden relative w-10 h-10 flex items-center justify-center"
           aria-label="Toggle menu"
         >
@@ -113,7 +119,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: isMobile ? 0.18 : 0.3 }}
             className="fixed inset-0 z-40 mobile-nav-overlay bg-surface-container-lowest/95 flex flex-col items-center justify-center gap-8"
           >
             {navLinks.map((link, i) => (
@@ -124,7 +130,7 @@ export default function Navbar() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: i * 0.08, duration: 0.4 }}
+                transition={{ delay: isMobile ? 0 : i * 0.08, duration: isMobile ? 0.2 : 0.4 }}
                 className={`font-headline text-3xl font-bold uppercase tracking-wider transition-colors ${
                   active === link.href.slice(1)
                     ? "text-primary"
@@ -142,7 +148,10 @@ export default function Navbar() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ delay: navLinks.length * 0.08, duration: 0.4 }}
+              transition={{
+                delay: isMobile ? 0 : navLinks.length * 0.08,
+                duration: isMobile ? 0.2 : 0.4,
+              }}
               className="mt-4 bg-gradient-to-r from-primary to-primary-fixed text-on-primary px-10 py-4 rounded-full font-label font-bold uppercase text-xs tracking-[0.2em]"
             >
               Resume

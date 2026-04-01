@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 
 const HEADER_GAP = 20;
-const MAX_WAIT_FRAMES = 180;
-const STABLE_ALIGNMENT_FRAMES = 8;
-const POSITION_TOLERANCE = 4;
+const MAX_WAIT_FRAMES = 24;
 
 function getHeaderOffset() {
   const nav = document.querySelector("nav");
@@ -37,31 +35,10 @@ export default function HashScrollManager() {
 
     const scheduleScroll = (hash, options = {}) => {
       let waitFrames = 0;
-      let alignedFrames = 0;
 
       const registerFrame = (callback) => {
         const id = window.requestAnimationFrame(callback);
         rafIds.push(id);
-      };
-
-      const alignToTarget = (target) => {
-        const desiredTop = getTargetScrollTop(target);
-        const delta = Math.abs(window.scrollY - desiredTop);
-
-        window.scrollTo({
-          top: desiredTop,
-          behavior: options.behavior ?? "smooth",
-        });
-
-        if (delta <= POSITION_TOLERANCE) {
-          alignedFrames += 1;
-        } else {
-          alignedFrames = 0;
-        }
-
-        if (alignedFrames < STABLE_ALIGNMENT_FRAMES) {
-          registerFrame(() => alignToTarget(target));
-        }
       };
 
       const waitForTarget = () => {
@@ -69,8 +46,6 @@ export default function HashScrollManager() {
         waitFrames += 1;
 
         if (target) {
-          alignedFrames = 0;
-          registerFrame(() => alignToTarget(target));
           return;
         }
 
@@ -103,7 +78,7 @@ export default function HashScrollManager() {
         window.history.pushState(null, "", href);
       }
 
-      scheduleScroll(href);
+      scheduleScroll(href, { behavior: "smooth" });
     };
 
     const onHashChange = () => {

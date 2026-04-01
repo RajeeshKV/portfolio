@@ -5,8 +5,14 @@ export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 500);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => {
+      const nextVisible = window.scrollY > 500;
+      setVisible((prev) => (prev === nextVisible ? prev : nextVisible));
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 

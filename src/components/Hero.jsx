@@ -55,6 +55,10 @@ const TypingLine = memo(function TypingLine({ text, type, delay }) {
 export default function Hero() {
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
   const instantIntro = isMobile;
+  const scrollIndicatorAnimation = isMobile ? {} : { y: [0, 8, 0] };
+  const scrollIndicatorTransition = isMobile
+    ? { duration: 0 }
+    : { repeat: Infinity, duration: 2, ease: "easeInOut" };
 
   return (
     <section
@@ -191,8 +195,8 @@ export default function Hero() {
           Scroll
         </span>
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          animate={scrollIndicatorAnimation}
+          transition={scrollIndicatorTransition}
           className="w-5 h-8 border border-outline-variant/30 rounded-full flex justify-center pt-1.5"
         >
           <div className="w-1 h-2 bg-primary/60 rounded-full" />

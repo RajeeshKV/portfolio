@@ -6,13 +6,13 @@ export default function PageLoader({ children }) {
 
   useEffect(() => {
     let cancelled = false;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
     document.body.style.overflow = "hidden";
 
-    // Fallback so loader never gets stuck in edge cases.
     const hardMaxTimeout = setTimeout(() => {
       if (!cancelled) setLoading(false);
-    }, 4500);
+    }, isMobile ? 2200 : 2600);
 
     const waitForWindowLoad = () =>
       new Promise((resolve) => {
@@ -41,58 +41,17 @@ export default function PageLoader({ children }) {
         step(frames);
       });
 
-    const waitForCriticalHomeContent = () =>
-      new Promise((resolve) => {
-        const selectors = [
-          "[data-home-logo]",
-          "[data-home-cta-primary]",
-          "[data-home-cta-secondary]",
-        ];
-        const startedAt = Date.now();
-        const maxWaitMs = 2800;
-
-        const hasVisibleElement = (selector) => {
-          const el = document.querySelector(selector);
-          if (!el) return false;
-          const rect = el.getBoundingClientRect();
-          return rect.width > 0 && rect.height > 0;
-        };
-
-        const check = () => {
-          if (cancelled) {
-            resolve();
-            return;
-          }
-
-          const allReady = selectors.every(hasVisibleElement);
-          const timedOut = Date.now() - startedAt > maxWaitMs;
-          if (allReady || timedOut) {
-            resolve();
-            return;
-          }
-
-          requestAnimationFrame(check);
-        };
-
-        check();
-      });
-
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const minDelay = new Promise((resolve) =>
-      setTimeout(resolve, isMobile ? 850 : 550)
+      setTimeout(resolve, isMobile ? 280 : 420)
     );
-    const mobileSettleDelay = isMobile
-      ? new Promise((resolve) => setTimeout(resolve, 250))
-      : Promise.resolve();
-    const fontsReady = document.fonts?.ready ?? Promise.resolve();
-
-    Promise.all([
+    const loadSettled = Promise.race([
       waitForWindowLoad(),
-      fontsReady,
-      minDelay,
-      waitForCriticalHomeContent(),
-      mobileSettleDelay,
-    ])
+      new Promise((resolve) =>
+        setTimeout(resolve, isMobile ? 900 : 1200)
+      ),
+    ]);
+
+    Promise.all([loadSettled, minDelay])
       .then(() => waitForFrames(2))
       .then(() => {
         if (!cancelled) setLoading(false);

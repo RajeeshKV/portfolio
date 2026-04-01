@@ -131,7 +131,8 @@
    GLOBAL STYLES
    =========================================== */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
 }
 
 section[id] {
@@ -147,6 +148,13 @@ body {
   color: var(--color-on-surface);
   font-family: var(--font-body);
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+a,
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
@@ -217,21 +225,26 @@ body {
 
 /* Reduce heavy blur effects on mobile GPUs */
 @media (max-width: 768px) {
-  /* Ambient glows: smaller blur radius on mobile */
+  /* Keep compositor work low on mobile Safari */
   .blur-\[150px\] {
-    filter: blur(80px) !important;
+    filter: blur(48px) !important;
   }
   .blur-\[120px\] {
-    filter: blur(60px) !important;
+    filter: blur(36px) !important;
   }
   .blur-\[80px\] {
-    filter: blur(40px) !important;
+    filter: blur(24px) !important;
   }
 
-  /* Reduce backdrop-blur intensity on mobile */
+  .glass-panel,
+  .mobile-nav-overlay,
   .backdrop-blur-2xl {
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 18px rgba(170, 255, 220, 0.18);
   }
 }
 
