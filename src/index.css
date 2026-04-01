@@ -256,3 +256,7 @@ section[id]:not(#home) {
   content-visibility: auto;
   contain-intrinsic-size: auto 600px;
 }
+
+html.hash-scroll-layout-ready section[id]:not(#home) {
+  content-visibility: visible;
+}

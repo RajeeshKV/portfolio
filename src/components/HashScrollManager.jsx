@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 
 const HEADER_GAP = 20;
-const MAX_WAIT_FRAMES = 24;
+const MAX_WAIT_FRAMES = 36;
+const WARMUP_FRAMES = 2;
+const REQUIRED_STABLE_FRAMES = 2;
+const STABLE_DELTA = 2;
+const FORCED_LAYOUT_CLASS = "hash-scroll-layout-ready";
 
 function getHeaderOffset() {
   const nav = document.querySelector("nav");
@@ -15,18 +19,12 @@ function getTargetScrollTop(target) {
   );
 }
 
-function scrollToHash(hash, options = {}) {
-  if (!hash || hash === "#") return false;
+function isPageLoading() {
+  return document.documentElement.dataset.pageLoading === "true";
+}
 
-  const target = document.querySelector(hash);
-  if (!target) return false;
-
-  window.scrollTo({
-    top: getTargetScrollTop(target),
-    behavior: options.behavior ?? "smooth",
-  });
-
-  return target;
+function setForcedLayout(enabled) {
+  document.documentElement.classList.toggle(FORCED_LAYOUT_CLASS, enabled);
 }
 
 export default function HashScrollManager() {
@@ -34,24 +32,72 @@ export default function HashScrollManager() {
     let rafIds = [];
 
     const scheduleScroll = (hash, options = {}) => {
-      let waitFrames = 0;
-
       const registerFrame = (callback) => {
         const id = window.requestAnimationFrame(callback);
         rafIds.push(id);
       };
 
+      let waitFrames = 0;
+      let stableFrames = 0;
+      let lastTop = null;
+
+      setForcedLayout(true);
+
+      const finish = (top) => {
+        setForcedLayout(false);
+
+        if (typeof top === "number") {
+          window.scrollTo({
+            top,
+            behavior: options.behavior ?? "smooth",
+          });
+        }
+      };
+
       const waitForTarget = () => {
-        const target = scrollToHash(hash, options);
         waitFrames += 1;
 
-        if (target) {
+        if (isPageLoading()) {
+          if (waitFrames < MAX_WAIT_FRAMES) {
+            registerFrame(waitForTarget);
+          } else {
+            finish();
+          }
           return;
         }
 
-        if (waitFrames < MAX_WAIT_FRAMES) {
-          registerFrame(waitForTarget);
+        const target = document.querySelector(hash);
+
+        if (!target) {
+          if (waitFrames < MAX_WAIT_FRAMES) {
+            registerFrame(waitForTarget);
+          } else {
+            finish();
+          }
+          return;
         }
+
+        if (waitFrames <= WARMUP_FRAMES) {
+          registerFrame(waitForTarget);
+          return;
+        }
+
+        const nextTop = getTargetScrollTop(target);
+
+        if (lastTop !== null && Math.abs(nextTop - lastTop) <= STABLE_DELTA) {
+          stableFrames += 1;
+        } else {
+          stableFrames = 0;
+        }
+
+        lastTop = nextTop;
+
+        if (stableFrames >= REQUIRED_STABLE_FRAMES || waitFrames >= MAX_WAIT_FRAMES) {
+          finish(nextTop);
+          return;
+        }
+
+        registerFrame(waitForTarget);
       };
 
       registerFrame(waitForTarget);
@@ -89,14 +135,17 @@ export default function HashScrollManager() {
 
     document.addEventListener("click", onDocumentClick);
     window.addEventListener("hashchange", onHashChange);
+    window.addEventListener("page-loader:complete", onHashChange);
 
     if (window.location.hash) {
       scheduleScroll(window.location.hash, { behavior: "auto" });
     }
 
     return () => {
+      setForcedLayout(false);
       document.removeEventListener("click", onDocumentClick);
       window.removeEventListener("hashchange", onHashChange);
+      window.removeEventListener("page-loader:complete", onHashChange);
       rafIds.forEach((id) => window.cancelAnimationFrame(id));
       rafIds = [];
     };

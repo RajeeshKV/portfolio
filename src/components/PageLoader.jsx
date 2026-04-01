@@ -5,6 +5,8 @@ export default function PageLoader({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.documentElement.dataset.pageLoading = "true";
+
     let cancelled = false;
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
@@ -63,12 +65,15 @@ export default function PageLoader({ children }) {
     return () => {
       cancelled = true;
       clearTimeout(hardMaxTimeout);
+      delete document.documentElement.dataset.pageLoading;
       document.body.style.overflow = "";
     };
   }, []);
 
   useEffect(() => {
     if (!loading) {
+      document.documentElement.dataset.pageLoading = "false";
+      window.dispatchEvent(new Event("page-loader:complete"));
       document.body.style.overflow = "";
     }
   }, [loading]);
