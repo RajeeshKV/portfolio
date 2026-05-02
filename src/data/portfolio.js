@@ -16,6 +16,27 @@ export const heroInfo = {
 
 export const projects = [
   {
+    id: 5,
+    title: "SaaSify",
+    subtitle: "Full-Stack Architect",
+    description:
+      "A robust multi-tenant SaaS platform built on .NET and React, featuring secure tenant isolation, JWT authentication with refresh token rotation, and a comprehensive subscription management system.",
+    tags: [".NET Core", "React 18", "PostgreSQL", "JWT Auth", "Multi-tenancy"],
+    features: [
+      "Strict Tenant Data Isolation",
+      "JWT with Refresh Token Rotation",
+      "Dynamic Subscription Plans",
+      "API-First Architecture",
+      "Modern React Workspace",
+      "Automated Billing Logic",
+    ],
+    image: "/projects/saasify-1.png",
+    images: ["/projects/saasify-1.png", "/projects/saasify-2.png"],
+    link: "https://saasify.rajeesh.online/",
+    featured: true,
+    span: "col-span-12",
+  },
+  {
     id: 1,
     title: "Seraphine Flowers",
     subtitle: "Frontend Architect",

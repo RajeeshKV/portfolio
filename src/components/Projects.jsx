@@ -1,9 +1,22 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "../hooks/useInView";
 import { projects } from "../data/portfolio";
 
 function FeaturedProject({ project }) {
   const [ref, inView] = useInView();
+  const [currentImage, setCurrentImage] = useState(0);
+  
+  // Auto-advance images if multiple exist
+  useEffect(() => {
+    if (project.images && project.images.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentImage((prev) => (prev + 1) % project.images.length);
+      }, 4000);
+      return () => clearInterval(timer);
+    }
+  }, [project.images]);
+
   return (
     <motion.div
       ref={ref}
@@ -14,14 +27,37 @@ function FeaturedProject({ project }) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch">
         {/* Image */}
-        <div className="relative overflow-hidden h-[220px] sm:h-[260px] lg:h-full lg:min-h-full">
-          <img
-            src={project.image}
-            alt={project.title}
-            className="absolute inset-0 w-full h-full object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100 blur-[2px] group-hover:blur-0"
-            loading="lazy"
-          />
+        <div className="relative overflow-hidden h-[240px] sm:h-[300px] lg:h-full lg:min-h-full bg-black/20">
+          {(project.images || [project.image]).map((img, idx) => (
+            <motion.img
+              key={img}
+              src={img}
+              alt={`${project.title} screenshot ${idx + 1}`}
+              initial={{ opacity: 0 }}
+              animate={{ 
+                opacity: (project.images ? currentImage === idx : true) ? 1 : 0,
+                scale: (project.images ? currentImage === idx : true) ? 1 : 1.1
+              }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full object-cover object-top grayscale group-hover:grayscale-0 blur-[1px] group-hover:blur-0"
+              loading="lazy"
+            />
+          ))}
           <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/30 to-transparent" />
+          
+          {/* Image Indicators */}
+          {project.images && project.images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+              {project.images.map((_, idx) => (
+                <div 
+                  key={idx}
+                  className={`h-1 rounded-full transition-all duration-500 ${
+                    currentImage === idx ? "w-6 bg-primary" : "w-1.5 bg-white/30"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Content */}
