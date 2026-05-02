@@ -49,8 +49,7 @@ export const projects = [
       "WhatsApp Integrated Order Flow",
       "Firebase Auth & Firestore",
     ],
-    image:
-      "https://lh3.googleusercontent.com/aida/ADBb0ui5suLfiOcfsaNriGszT4I1Jevk9Rbp-59PMsHu0NIyJ5uWhfe8OhABGeVU7e0O-l2gawQbpvQkNHOgS6RCZ_XankUw8aWrqSHKDHJmSzrx_91JaUgr8pkFuQP_zTPLRXdZn2v3XdD7qB_uk1AF-ZvxrN_ndGXDIAzeJL-ChSJsVzZH8kXKYmt4qHxKVGAjj16uusIvYWeeQl4nJi9Ygbnx0RB2FX_WYB1Qhorjz5rRi6NSVXvmgGqYnX4hLZztG4o2Y1HYjRvR3A",
+    image: "/projects/seraphine-flowers.png",
     link: "https://www.seraphineflowers.in/",
     featured: true,
     span: "col-span-12",
